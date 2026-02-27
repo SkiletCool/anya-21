@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>З Днем Народження, Аня! 🎉</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=Cormorant+Garamond:ital,wght@1,300;1,400&display=swap"
+        rel="stylesheet" />
+
+    <style>
+        /* ========================
+       CSS VARIABLES & RESET
+    ======================== */
+        :root {
+            --gold: #C9A84C;
+            --gold-light: #F0D080;
+            --gold-pale: #FAF0D0;
+            --rose: #E8C0B0;
+            --rose-deep: #C07060;
+            --ink: #1A1410;
+            --ink-soft: #3A2C20;
+            --cream: #FDF6EC;
+            --surface: #FEFAF4;
+            --glow: rgba(201, 168, 76, 0.25);
+
+            --font-display: 'Playfair Display', serif;
+            --font-body: 'DM Sans', sans-serif;
+            --font-italic: 'Cormorant Garamond', serif;
+
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--cream);
+            color: var(--ink);
+            overflow-x: hidden;
+            cursor: default;
+        }
+
+        /* ========================
+       CANVAS BACKGROUND
+    ======================== */
+        #canvas-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* ========================
+       CONFETTI CANVAS
+    ======================== */
+        #confetti-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: 999;
+            pointer-events: none;
+        }
+
+        /* ========================
+       SCROLL PROGRESS
+    ======================== */
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            width: 0%;
+            background: linear-gradient(90deg, var(--gold), var(--gold-light));
+            z-index: 1000;
+            transition: width 0.1s linear;
+        }
+
+        /* ========================
+       NAV
+    ======================== */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(12px);
+            background: rgba(253, 246, 236, 0.7);
+            border-bottom: 1px solid rgba(201, 168, 76, 0.15);
+            transition: all 0.4s ease;
+        }
+
+        .nav-logo {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--gold);
+            letter-spacing: 0.04em;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-size: 0.82rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--ink-soft);
+            text-decoration: none;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--gold);
+            transition: width 0.3s var(--ease-out-expo);
+        }
+
+        .nav-links a:hover {
+            color: var(--gold);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* ========================
+       HERO SECTION
+    ======================== */
+        #hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 120px 24px 60px;
+            z-index: 1;
+        }
+
+        .hero-tag {
+            font-family: var(--font-italic);
+            font-style: italic;
+            font-size: 1.1rem;
+            color: var(--gold);
+            letter-spacing: 0.08em;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fade-up 0.8s var(--ease-out-expo) 0.3s forwards;
+        }
+
+        .hero-name {
+            font-family: var(--font-display);
+            font-weight: 900;
+            font-size: clamp(4rem, 14vw, 11rem);
+            line-height: 0.95;
+            color: var(--ink);
+            margin: 12px 0;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fade-up 1s var(--ease-out-expo) 0.5s forwards;
+            position: relative;
+        }
+
+        .hero-name span {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 50%, var(--rose-deep) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Gold shimmer on name */
+        .hero-name::after {
+            content: attr(data-text);
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.6) 50%, transparent 100%);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 4s linear 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200% center;
+            }
+
+            100% {
+                background-position: -200% center;
+            }
+        }
+
+        .hero-subtitle {
+            font-family: var(--font-italic);
+            font-style: italic;
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            color: var(--ink-soft);
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fade-up 0.8s var(--ease-out-expo) 0.8s forwards;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+            animation: fade-up 0.8s ease 1.8s forwards;
+        }
+
+        .scroll-indicator span {
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--gold);
+        }
+
+        .scroll-line {
+            width: 1px;
+            height: 48px;
+            background: linear-gradient(to bottom, var(--gold), transparent);
+            animation: scroll-line 1.5s ease-in-out infinite;
+        }
+
+        @keyframes scroll-line {
+
+            0%,
+            100% {
+                transform: scaleY(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scaleY(0.5);
+                opacity: 0.4;
+            }
+        }
+
+        /* ========================
+       21 SECTION
+    ======================== */
+        #twenty-one {
+            position: relative;
+            z-index: 1;
+            padding: 80px 24px;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .section-label {
+            font-family: var(--font-italic);
+            font-style: italic;
+            font-size: 0.95rem;
+            color: var(--gold);
+            letter-spacing: 0.1em;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .big-21 {
+            font-family: var(--font-display);
+            font-weight: 900;
+            font-size: clamp(8rem, 30vw, 22rem);
+            line-height: 1;
+            color: transparent;
+            -webkit-text-stroke: 2px var(--gold);
+            position: relative;
+            display: inline-block;
+            letter-spacing: -0.02em;
+        }
+
+        .big-21 .fill-text {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--gold-pale), var(--gold-light), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            clip-path: inset(100% 0 0 0);
+            transition: clip-path 1.2s var(--ease-out-expo);
+        }
+
+        .big-21.revealed .fill-text {
+            clip-path: inset(0% 0 0 0);
+        }
+
+        .twenty-one-desc {
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            color: var(--ink-soft);
+            max-width: 520px;
+            margin: 24px auto 0;
+            line-height: 1.7;
+        }
+
+        /* ========================
+       WISHES SECTION
+    ======================== */
+        #wishes {
+            position: relative;
+            z-index: 1;
+            padding: 80px 24px;
+        }
+
+        .wishes-inner {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .wishes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 24px;
+            margin-top: 48px;
+        }
+
+        .wish-card {
+            background: var(--surface);
+            border: 1px solid rgba(201, 168, 76, 0.2);
+            border-radius: 16px;
+            padding: 32px 28px;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.6s var(--ease-out-expo);
+            cursor: default;
+        }
+
+        .wish-card.in-view {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .wish-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gold), var(--gold-light));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.5s var(--ease-out-expo);
+        }
+
+        .wish-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .wish-card:hover {
+            border-color: rgba(201, 168, 76, 0.5);
+            box-shadow: 0 20px 60px rgba(201, 168, 76, 0.12);
+            transform: translateY(-4px);
+        }
+
+        .wish-icon {
+            font-size: 2rem;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .wish-title {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--ink);
+            margin-bottom: 10px;
+        }
+
+        .wish-text {
+            font-size: 0.9rem;
+            color: var(--ink-soft);
+            line-height: 1.7;
+        }
+
+        /* ========================
+       SECRET MESSAGE
+    ======================== */
+        #message-section {
+            position: relative;
+            z-index: 1;
+            padding: 80px 24px;
+            text-align: center;
+        }
+
+        .reveal-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 40px;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+            color: var(--ink);
+            font-family: var(--font-body);
+            font-weight: 500;
+            font-size: 0.95rem;
+            letter-spacing: 0.08em;
+            border: none;
+            border-radius: 100px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(201, 168, 76, 0.35);
+        }
+
+        .reveal-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--gold-light), var(--gold));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .reveal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 40px rgba(201, 168, 76, 0.45);
+        }
+
+        .reveal-btn:hover::before {
+            opacity: 1;
+        }
+
+        .reveal-btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .secret-message {
+            max-width: 640px;
+            margin: 40px auto 0;
+            background: var(--surface);
+            border: 1px solid rgba(201, 168, 76, 0.25);
+            border-radius: 20px;
+            padding: 40px;
+            opacity: 0;
+            transform: translateY(20px) scale(0.97);
+            transition: all 0.7s var(--ease-bounce);
+            pointer-events: none;
+        }
+
+        .secret-message.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .secret-message p {
+            font-family: var(--font-italic);
+            font-style: italic;
+            font-size: clamp(1rem, 2.5vw, 1.25rem);
+            color: var(--ink-soft);
+            line-height: 1.85;
+        }
+
+        .secret-message p strong {
+            font-family: var(--font-display);
+            font-style: normal;
+            color: var(--gold);
+        }
+
+        /* ========================
+       FOOTER
+    ======================== */
+        footer {
+            position: relative;
+            z-index: 1;
+            padding: 48px 24px;
+            text-align: center;
+            border-top: 1px solid rgba(201, 168, 76, 0.15);
+        }
+
+        .footer-text {
+            font-family: var(--font-italic);
+            font-style: italic;
+            color: var(--gold);
+            font-size: 1rem;
+            letter-spacing: 0.05em;
+        }
+
+        .footer-hearts {
+            font-size: 1.5rem;
+            margin-top: 12px;
+            letter-spacing: 0.3em;
+            animation: float-hearts 3s ease-in-out infinite;
+        }
+
+        @keyframes float-hearts {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-6px);
+            }
+        }
+
+        /* ========================
+       SECTION HEADINGS
+    ======================== */
+        .section-heading {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            color: var(--ink);
+            text-align: center;
+            position: relative;
+        }
+
+        .section-heading::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gold), var(--gold-light));
+            margin: 16px auto 0;
+            border-radius: 2px;
+        }
+
+        /* ========================
+       UTILITY ANIMATIONS
+    ======================== */
+        @keyframes fade-up {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ========================
+       DECORATIVE ORBS
+    ======================== */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(201, 168, 76, 0.18), transparent 70%);
+            top: -100px;
+            right: -100px;
+            animation: orb-float 8s ease-in-out infinite;
+        }
+
+        .orb-2 {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(232, 192, 176, 0.2), transparent 70%);
+            bottom: 20px;
+            left: -80px;
+            animation: orb-float 10s ease-in-out 2s infinite reverse;
+        }
+
+        @keyframes orb-float {
+
+            0%,
+            100% {
+                transform: translateY(0) scale(1);
+            }
+
+            50% {
+                transform: translateY(-30px) scale(1.05);
+            }
+        }
+
+        /* ========================
+       DIVIDER
+    ======================== */
+        .divider {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            opacity: 0.4;
+        }
+
+        /* ========================
+       RESPONSIVE
+    ======================== */
+        @media (max-width: 768px) {
+            nav {
+                padding: 16px 20px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .big-21 {
+                -webkit-text-stroke: 1.5px var(--gold);
+            }
+
+            .secret-message {
+                padding: 28px 20px;
+            }
+        }
+
+        /* ========================
+       FLOATING STARS
+    ======================== */
+        .star {
+            position: absolute;
+            background: var(--gold);
+            border-radius: 50%;
+            opacity: 0;
+            pointer-events: none;
+            animation: twinkle var(--dur, 3s) ease-in-out var(--del, 0s) infinite;
+        }
+
+        @keyframes twinkle {
+
+            0%,
+            100% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+
+            50% {
+                opacity: 0.8;
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Progress bar -->
+    <div id="progress-bar"></div>
+
+    <!-- Confetti canvas -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- Background canvas -->
+    <canvas id="canvas-bg"></canvas>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-logo">Аня · 21</div>
+        <ul class="nav-links">
+            <li><a href="#hero">Головна</a></li>
+            <li><a href="#twenty-one">21 рік</a></li>
+            <li><a href="#wishes">Побажання</a></li>
+            <li><a href="#message-section">Послання</a></li>
+        </ul>
+    </nav>
+
+    <!-- HERO -->
+    <section id="hero">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+
+        <p class="hero-tag">— З Днем Народження —</p>
+        <h1 class="hero-name" data-text="Аня"><span>Аня</span></h1>
+        <p class="hero-subtitle">Двадцять один рік неймовірної ти</p>
+
+        <div class="scroll-indicator">
+            <span>Гортай</span>
+            <div class="scroll-line"></div>
+        </div>
+    </section>
+
+    <!-- 21 SECTION -->
+    <section id="twenty-one">
+        <span class="section-label">Особлива дата</span>
+        <div class="big-21" id="big21">
+            21
+            <div class="fill-text" aria-hidden="true">21</div>
+        </div>
+        <p class="twenty-one-desc">
+            Двадцять один — це не просто число. Це вже ціла глава, сповнена рішень, сміливості та відкриттів. Ти
+            написала її сама — і вона прекрасна.
+        </p>
+    </section>
+
+    <div class="divider" style="margin: 20px auto;"></div>
+
+    <!-- WISHES -->
+    <section id="wishes">
+        <div class="wishes-inner">
+            <span class="section-label">Від щирого серця</span>
+            <h2 class="section-heading">Побажання для тебе</h2>
+
+            <div class="wishes-grid">
+                <div class="wish-card">
+                    <span class="wish-icon">✨</span>
+                    <h3 class="wish-title">Натхнення</h3>
+                    <p class="wish-text">Нехай кожен ранок несе нові ідеї, а твоя енергія ніколи не згасає. Ти здатна
+                        змінювати все навколо себе — вір у це.</p>
+                </div>
+                <div class="wish-card">
+                    <span class="wish-icon">🌿</span>
+                    <h3 class="wish-title">Спокій і сила</h3>
+                    <p class="wish-text">Нехай усередині живе тиша, яка дає силу. Ти вже довела, що вмієш справлятися —
+                        і попереду лише більше перемог.</p>
+                </div>
+                <div class="wish-card">
+                    <span class="wish-icon">🚀</span>
+                    <h3 class="wish-title">Сміливість мріяти</h3>
+                    <p class="wish-text">Нехай мрії більше не залишаються мріями. Двадцять один — ідеальний вік, щоб
+                        почати втілювати найбезумніші плани.</p>
+                </div>
+                <div class="wish-card">
+                    <span class="wish-icon">🌟</span>
+                    <h3 class="wish-title">Радість щодня</h3>
+                    <p class="wish-text">Нехай навіть у звичайний вівторок трапляється щось, що змусить тебе
+                        посміхнутись до вух. Ти заслуговуєш на це.</p>
+                </div>
+                <div class="wish-card">
+                    <span class="wish-icon">🎯</span>
+                    <h3 class="wish-title">Чіткі цілі</h3>
+                    <p class="wish-text">Нехай кожен крок веде тебе саме туди, куди прагне твоє серце. А якщо
+                        збиватимешся — знаходь шлях знову і знову.</p>
+                </div>
+                <div class="wish-card">
+                    <span class="wish-icon">💎</span>
+                    <h3 class="wish-title">Гордість за себе</h3>
+                    <p class="wish-text">Нехай ти частіше зупиняєшся і думаєш: «Я зробила це». Бо ти робиш — і
+                        дивовижно. Пишайся собою голосно.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider" style="margin: 20px auto;"></div>
+
+    <!-- MESSAGE -->
+    <section id="message-section">
+        <span class="section-label">Спеціально для тебе</span>
+        <h2 class="section-heading">Таємне послання</h2>
+        <p
+            style="margin: 16px auto 32px; color: var(--ink-soft); font-size: 0.95rem; max-width: 400px; text-align:center;">
+            Натисни, щоб відкрити слова, написані спеціально для тебе ✨</p>
+
+        <button class="reveal-btn" id="reveal-btn" onclick="revealMessage()">
+            <span>✦ Відкрити послання ✦</span>
+        </button>
+
+        <div class="secret-message" id="secret-message">
+            <p>
+                <strong>Аню,</strong> ти — одна з тих людей, чия присутність робить світ яскравішим. Не тому що ти
+                ідеальна — а тому що ти <strong>справжня</strong>. Із усіма своїми думками, мріями і тією унікальною
+                енергією, яка є лише твоєю.
+                <br /><br />
+                У двадцять один є щось магічне: ти вже достатньо мудра, щоб знати, чого хочеш, і достатньо молода, щоб
+                не боятися помилятися. Використовуй це.<br /><br />
+                Нехай цей рік буде сповнений моментів, які ти захочеш пам'ятати все життя.
+                <br /><br />
+                <strong>З Днем Народження, Аню. Ти неймовірна.</strong>
+            </p>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <p class="footer-text">«Найкраще ще попереду» — і це точно про тебе, Аню ✦</p>
+        <div class="footer-hearts">🌟 ✨ 🌟</div>
+    </footer>
+
+    <script>
+        /* ========================
+           SCROLL PROGRESS
+        ======================== */
+        window.addEventListener('scroll', () => {
+            const scrolled = window.scrollY;
+            const total = document.documentElement.scrollHeight - window.innerHeight;
+            const pct = (scrolled / total) * 100;
+            document.getElementById('progress-bar').style.width = pct + '%';
+        });
+
+        /* ========================
+           BACKGROUND CANVAS — Particles
+        ======================== */
+        (function initBg() {
+            const canvas = document.getElementById('canvas-bg');
+            const ctx = canvas.getContext('2d');
+            let W, H, particles = [];
+
+            function resize() {
+                W = canvas.width = window.innerWidth;
+                H = canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            const COLORS = ['rgba(201,168,76,', 'rgba(240,208,128,', 'rgba(232,192,176,'];
+
+            function Particle() {
+                this.x = Math.random() * W;
+                this.y = Math.random() * H;
+                this.r = Math.random() * 2 + 0.5;
+                this.alpha = Math.random() * 0.4 + 0.1;
+                this.vx = (Math.random() - 0.5) * 0.3;
+                this.vy = (Math.random() - 0.5) * 0.3;
+                this.color = COLORS[Math.floor(Math.random() * COLORS.length)];
+            }
+
+            for (let i = 0; i < 80; i++) particles.push(new Particle());
+
+            function draw() {
+                ctx.clearRect(0, 0, W, H);
+                particles.forEach(p => {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fillStyle = p.color + p.alpha + ')';
+                    ctx.fill();
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    if (p.x < 0) p.x = W;
+                    if (p.x > W) p.x = 0;
+                    if (p.y < 0) p.y = H;
+                    if (p.y > H) p.y = 0;
+                });
+                requestAnimationFrame(draw);
+            }
+            draw();
+        })();
+
+        /* ========================
+           CONFETTI
+        ======================== */
+        (function initConfetti() {
+            const canvas = document.getElementById('confetti-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+
+            const COLORS = ['#C9A84C', '#F0D080', '#E8C0B0', '#C07060', '#FAF0D0', '#fff'];
+            let pieces = [];
+
+            function createPiece(x, y) {
+                for (let i = 0; i < 6; i++) {
+                    pieces.push({
+                        x, y,
+                        vx: (Math.random() - 0.5) * 8,
+                        vy: -(Math.random() * 8 + 3),
+                        w: Math.random() * 10 + 4,
+                        h: Math.random() * 5 + 2,
+                        color: COLORS[Math.floor(Math.random() * COLORS.length)],
+                        rotation: Math.random() * 360,
+                        rotationSpeed: (Math.random() - 0.5) * 8,
+                        alpha: 1,
+                        gravity: 0.25,
+                    });
+                }
+            }
+
+            // Burst on load
+            setTimeout(() => {
+                for (let i = 0; i < 12; i++) {
+                    createPiece(Math.random() * window.innerWidth, Math.random() * window.innerHeight * 0.5);
+                }
+            }, 1200);
+
+            function loop() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                pieces.forEach((p, i) => {
+                    p.vy += p.gravity;
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.rotation += p.rotationSpeed;
+                    p.alpha -= 0.012;
+                    ctx.save();
+                    ctx.globalAlpha = Math.max(0, p.alpha);
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(p.rotation * Math.PI / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+                    ctx.restore();
+                });
+                pieces = pieces.filter(p => p.alpha > 0);
+                requestAnimationFrame(loop);
+            }
+            loop();
+
+            // Expose for button interaction
+            window._burstConfetti = (x, y) => {
+                for (let i = 0; i < 20; i++) createPiece(x, y);
+            };
+        })();
+
+        /* ========================
+           REVEAL MESSAGE
+        ======================== */
+        function revealMessage() {
+            const msg = document.getElementById('secret-message');
+            const btn = document.getElementById('reveal-btn');
+            if (msg.classList.contains('visible')) return;
+            msg.classList.add('visible');
+            btn.style.opacity = '0.5';
+            btn.style.pointerEvents = 'none';
+
+            // Confetti burst at button position
+            const rect = btn.getBoundingClientRect();
+            window._burstConfetti(rect.left + rect.width / 2, rect.top);
+            setTimeout(() => window._burstConfetti(rect.left + rect.width / 2, rect.top), 300);
+        }
+
+        /* ========================
+           21 FILL ANIMATION (IntersectionObserver)
+        ======================== */
+        const obs21 = new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    e.target.classList.add('revealed');
+                    obs21.unobserve(e.target);
+                }
+            });
+        }, { threshold: 0.4 });
+
+        const big21El = document.getElementById('big21');
+        if (big21El) obs21.observe(big21El);
+
+        /* ========================
+           WISH CARDS ANIMATION
+        ======================== */
+        const obsCards = new IntersectionObserver((entries) => {
+            entries.forEach((e, i) => {
+                if (e.isIntersecting) {
+                    setTimeout(() => e.target.classList.add('in-view'), i * 100);
+                    obsCards.unobserve(e.target);
+                }
+            });
+        }, { threshold: 0.15 });
+
+        document.querySelectorAll('.wish-card').forEach((card, i) => {
+            card.style.transitionDelay = (i * 0.08) + 's';
+            obsCards.observe(card);
+        });
+
+        /* ========================
+           SPARKLE CURSOR
+        ======================== */
+        document.addEventListener('mousemove', (e) => {
+            if (Math.random() > 0.85) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                const size = Math.random() * 6 + 2;
+                star.style.cssText = `
+          left: ${e.clientX - size / 2}px;
+          top:  ${e.clientY - size / 2}px;
+          width: ${size}px;
+          height: ${size}px;
+          position: fixed;
+          --dur: ${(Math.random() * 0.8 + 0.4).toFixed(2)}s;
+          --del: 0s;
+          z-index: 9998;
+        `;
+                document.body.appendChild(star);
+                star.addEventListener('animationend', () => star.remove(), { once: true });
+            }
+        });
+
+        /* ========================
+           CONFETTI on CLICK (hero)
+        ======================== */
+        document.getElementById('hero').addEventListener('click', (e) => {
+            window._burstConfetti(e.clientX, e.clientY);
+        });
+    </script>
+</body>
+
+</html>
